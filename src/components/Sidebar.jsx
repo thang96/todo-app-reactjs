@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Sidebar.css";
+import PropTypes from "prop-types";
 
 const SideBar = (props) => {
   const data = props?.todoItem;
@@ -65,6 +66,16 @@ const SideBar = (props) => {
       </div>
     </>
   );
+};
+
+SideBar.propTypes = {
+  handleTodoItemChange: PropTypes.func,
+  onCancel: PropTypes.func,
+  todoItem: PropTypes.shape({
+    name: PropTypes.string,
+    isImportant: PropTypes.bool,
+    isCompleted: PropTypes.bool,
+  }),
 };
 
 export default SideBar;

@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 const TodoItem = (props) => {
   return (
@@ -10,7 +10,7 @@ const TodoItem = (props) => {
     >
       <div style={{ display: "flex", gap: 5 }}>
         <input
-        style={{cursor:"pointer"}}
+          style={{ cursor: "pointer" }}
           type="checkbox"
           checked={props.isCompleted}
           onClick={(e) => {
@@ -25,6 +25,15 @@ const TodoItem = (props) => {
       {props.isImportant && <p className="">⭐</p>}
     </div>
   );
+};
+
+TodoItem.propTypes = {
+  handleChangeTodoItem: PropTypes.func,
+  handleChangeCheckBox: PropTypes.func,
+  isImportant: PropTypes.bool,
+  isCompleted: PropTypes.bool,
+  id: PropTypes.string,
+  name: PropTypes.name,
 };
 
 export default TodoItem;
