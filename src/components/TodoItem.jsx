@@ -10,6 +10,7 @@ const TodoItem = (props) => {
     >
       <div style={{ display: "flex", gap: 5 }}>
         <input
+        style={{cursor:"pointer"}}
           type="checkbox"
           checked={props.isCompleted}
           onClick={(e) => {

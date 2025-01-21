@@ -13,11 +13,11 @@ function App() {
   ]);
   const [showSideBar, setShowSideBar] = useState(false);
   const [activeTodoItemId, setActiveTodoItemId] = useState(undefined);
-
+  const [selectedFilterId, setSelectedFilterId] = useState("all");
   const activeTodoItem = todoList.find((todo) => todo.id === activeTodoItemId);
 
   const inputRef = useRef();
-
+  
   const handleCompleteCheckBox = (todoId) => {
     const newTodoList = todoList.map((todo) => {
       if (todo.id === todoId) {
@@ -67,7 +67,12 @@ function App() {
   return (
     <>
       <div className="container">
-        <FilterPanel />
+        <FilterPanel
+          selectedFilterId={selectedFilterId}
+          setSelectedFilterId={(id) => {
+            setSelectedFilterId(id);
+          }}
+        />
         <div className="main-container">
           <input
             ref={inputRef}
