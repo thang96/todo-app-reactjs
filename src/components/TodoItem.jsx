@@ -33,7 +33,7 @@ TodoItem.propTypes = {
   isImportant: PropTypes.bool,
   isCompleted: PropTypes.bool,
   id: PropTypes.string,
-  name: PropTypes.name,
+  name: PropTypes.string,
 };
 
 export default TodoItem;

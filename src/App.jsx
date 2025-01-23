@@ -1,81 +1,57 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import "./App.css";
 import TodoItem from "./components/TodoItem";
 import SideBar from "./components/Sidebar";
 import FilterPanel from "./components/FilterPanel";
+import { AppContext, useAppContext } from "./context/AppProvider";
 
 function App() {
-  const [todoList, setTodoList] = useState([
-    {
-      id: "1",
-      name: "Đi học thêm",
-      isImportant: false,
-      isCompleted: true,
-      isDeleted: false,
-    },
-    {
-      id: "2",
-      name: "Học bài",
-      isImportant: true,
-      isCompleted: true,
-      isDeleted: false,
-    },
-    {
-      id: "3",
-      name: "Học code",
-      isImportant: true,
-      isCompleted: false,
-      isDeleted: false,
-    },
-    {
-      id: "4",
-      name: "Đi chợ",
-      isImportant: false,
-      isCompleted: false,
-      isDeleted: false,
-    },
-  ]);
-  const [showSideBar, setShowSideBar] = useState(false);
-  const [activeTodoItemId, setActiveTodoItemId] = useState(undefined);
-  const [selectedFilterId, setSelectedFilterId] = useState("all");
+  const {
+    selectedCategoryId,
+    todoList,
+    setTodoList,
+    showSideBar,
+    activeTodoItemId,
+    selectedFilterId,
+    searchText,
+    handleCompleteCheckBox,
+    handleTodoItemClick,
+    handleCloseSidebar,
+    handleTodoItemChange,
+  } = useAppContext(AppContext);
+
   const activeTodoItem = todoList.find((todo) => todo.id === activeTodoItemId);
 
   const inputRef = useRef();
 
-  const handleCompleteCheckBox = (todoId) => {
-    const newTodoList = todoList.map((todo) => {
-      if (todo.id === todoId) {
-        return { ...todo, isCompleted: !todo.isCompleted };
+  const handleAddTodo = (e) => {
+    if (e.key === "Enter") {
+      const value = e.target.value;
+      setTodoList([
+        ...todoList,
+        {
+          id: crypto.randomUUID(),
+          name: value,
+          isImportant: false,
+          isCompleted: false,
+          isDeletedd: false,
+          category: "personal",
+        },
+      ]);
+      inputRef.current.value = "";
+    }
+  };
+
+  const filterTodos = useMemo(() => {
+    return todoList.filter((todo) => {
+      if (
+        !todo.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
+      ) {
+        return false;
       }
-      return todo;
-    });
-
-    setTodoList(newTodoList);
-  };
-
-  const handleTodoItemClick = (todoId) => {
-    setShowSideBar(true);
-    setActiveTodoItemId(todoId);
-  };
-
-  const handleCloseSidebar = () => {
-    setShowSideBar(false);
-  };
-
-  const handleTodoItemChange = (newTodo) => {
-    const newTodoList = todoList.map((todo) => {
-      if (todo.id === newTodo?.id) {
-        return newTodo;
+      if (selectedCategoryId && selectedCategoryId !== todo.category) {
+        return false;
       }
-      return todo;
-    });
-
-    setTodoList(newTodoList);
-    setShowSideBar(false);
-  };
-
-  const filterTodos = todoList
-    .filter((todo) => {
       switch (selectedFilterId) {
         case "all":
           return true;
@@ -88,8 +64,11 @@ function App() {
         default:
           return true;
       }
-    })
-    .map((todo) => {
+    });
+  }, [todoList, selectedFilterId, searchText, selectedCategoryId]);
+
+  const renderTodoItem = () => {
+    return filterTodos.map((todo) => {
       return (
         <TodoItem
           id={todo.id}
@@ -102,16 +81,12 @@ function App() {
         />
       );
     });
+  };
 
   return (
     <>
       <div className="container">
-        <FilterPanel
-          selectedFilterId={selectedFilterId}
-          setSelectedFilterId={(id) => {
-            setSelectedFilterId(id);
-          }}
-        />
+        <FilterPanel />
         <div className="main-container">
           <input
             ref={inputRef}
@@ -120,23 +95,10 @@ function App() {
             placeholder="Add new task"
             className="task-input"
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                const value = e.target.value;
-                setTodoList([
-                  ...todoList,
-                  {
-                    id: crypto.randomUUID(),
-                    name: value,
-                    isImportant: false,
-                    isCompleted: false,
-                    isDeletedd: false,
-                  },
-                ]);
-                inputRef.current.value = "";
-              }
+              handleAddTodo(e);
             }}
           />
-          <div>{filterTodos}</div>
+          <div>{renderTodoItem()}</div>
           {showSideBar && (
             <SideBar
               key={activeTodoItemId}
